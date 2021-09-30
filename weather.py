@@ -12,10 +12,10 @@ app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
 
 
-    """
-    :param request: 
-    :returns 
-    """
+"""
+:param request: 
+:returns 
+"""
 
 
 def get_cities(raw_cities):
@@ -25,7 +25,7 @@ def get_cities(raw_cities):
     :returns a list with all the city names
     """
     #Delimiter can be  ',' and ' '
-    cities = re.split(',| ',raw_cities)
+    cities = re.split(',',raw_cities)
     return cities
 
 
@@ -100,6 +100,8 @@ def get_city_weather(city_name, raw_date):
 
     y = json.loads(response.text)
 
+    print(city_name)
+    print("*******************")
     result_city = {}
     for x in y['list']:
         if actual_date in x['dt_txt']:

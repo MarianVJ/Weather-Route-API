@@ -24,7 +24,7 @@ After you have performed all the dependency installations from above, you can ru
 
 
 ```shell
-$ python app.py
+$ python weather.py
 ```
 
 
@@ -37,12 +37,15 @@ This project uses a local sqlite for a repository.
 
 
 ## Usage
-curl http://127.0.0.1::5000/weather/?route=Bucharest,Sofia,Oras1,Oras2,Oras3&date=30.09.2021
+When the API is up and running we can test the endpoints with Postman. 
+
 
 
 
 ## Example
 
 ### Request
+
+
 
 ### Response
