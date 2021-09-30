@@ -45,7 +45,8 @@ When the API is up and running we can test the endpoints with Postman.
 ## Example endpoint 1
 
 ### Request
-![Screenshot](docs/SEND_1.png)
+![Screenshot](docs/SEND_1.PNG)
 
 
 ### Response
+![Screenshot](docs/RESPONSE_1.PNG)
