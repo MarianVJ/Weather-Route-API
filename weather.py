@@ -7,10 +7,27 @@ from collections import OrderedDict
 
 from flask import Flask, render_template, request
 from flask import jsonify
+from flask_bcrypt import Bcrypt
+from sqlalchemy import text
+
+from models.tables import TripsTable
+from models.tables import db
+
   
 app = Flask(__name__)
-app.config['JSON_SORT_KEYS'] = False
 
+app.config['JSON_SORT_KEYS'] = False
+app.config['DEBUG'] = True
+app.config['SECRET_KEY'] = "SuperSecretKey"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+
+db.init_app(app)
+bcrypt = Bcrypt(app)
+
+# create the db structure
+with app.app_context():
+    db.create_all()
 
 """
 :param request: 
@@ -148,13 +165,21 @@ def weather_endpoint_1():
         return jsonify(result)
 
 
-
+    trip_cities = ""
     ## Query the weathermapapi for each city
     cities = get_cities(raw_cities)
     result = OrderedDict()
     for city in cities:
         weather = get_city_weather(city, raw_date)
         result[city] = weather
+        trip_cities = trip_cities + city + "-"
+
+    trip_cities = trip_cities[:-1]
+    # Save in the database the trips
+    registered_on = datetime.datetime.utcnow()
+    reg = TripsTable(trip_cities, registered_on)
+    db.session.add(reg)
+    db.session.commit()
 
 
     return jsonify(result)
@@ -287,7 +312,7 @@ def weather_endpoint_bonus_1():
         return jsonify(result)
 
 
-
+    trip_cities = ""
     # Query the openweathermap API for each city
     # taking into account time passes while travelling between cities
     cities = get_cities(raw_cities)
@@ -297,7 +322,14 @@ def weather_endpoint_bonus_1():
         weather = get_city_weather_bonus(city, raw_date, city_index)
         result[city] = weather
         city_index = city_index + 1
+        trip_cities = trip_cities + city + "-"
 
+    trip_cities = trip_cities[:-1] 
+    # Save in the database the trips
+    registered_on = datetime.datetime.utcnow()
+    reg = TripsTable(trip_cities, registered_on)
+    db.session.add(reg)
+    db.session.commit()
 
     return jsonify(result)
 
@@ -317,47 +349,17 @@ def weather_endpoint_bonus_2():
     :returns an HttpResponse for the query in JSON format with the last 5 past trips
     somebody queried for
     """
-    raw_cities = request.args.get('route')
-    raw_date = request.args.get('date')
 
-    # Check that the route has at least a city
-    if not len(raw_cities) > 0:
-        result={}
-        result['cod'] = "404"
-        result['message'] = 'The route must have at least one city'
-        return jsonify(result)
-
-    # Check the date format
-    if not check_date_format(raw_date):
-        result={}
-        result['cod'] = "404"
-        result['message'] = 'Invalid date format'
-        #return json.dumps(result)
-        return jsonify(result)
-
-
-    # Check the if the date is in the next 5 days
-    if not check_date(raw_date):
-        result={}
-        result['cod'] = "404"
-        result['message'] = 'Date is out of boundaries'
-        return jsonify(result)
-
-
-
-    ## Query the weathermapapi for each city
-    cities = get_cities(raw_cities)
-    result = OrderedDict()
-    city_index = 0
-    for city in cities:
-        weather = get_city_weather_bonus(city, raw_date, city_index)
-        result[city] = weather
-        city_index = city_index + 1
-
-
+    # We order all the trips to be in descending
+    # order to get the most recent ones
+    rez = TripsTable.query.order_by(text("registered_on desc")).all()
+    result = {}
+    result['last_queryed_trip_1'] = rez[0].trip
+    result['last_queryed_trip_2'] = rez[1].trip
+    result['last_queryed_trip_3'] = rez[2].trip
+    result['last_queryed_trip_4'] = rez[3].trip
+    result['last_queryed_trip_5'] = rez[4].trip                
     return jsonify(result)
-
-
 
 
 
