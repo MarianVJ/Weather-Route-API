@@ -18,7 +18,7 @@ Requirements:
 * Flask 2.0.+
 * Flask-SQLAlchemy 2.5.+
 * Flask-Bcrypt 0.7.+
-
+* requests 2.26.+
 
 ## Running the application
 
