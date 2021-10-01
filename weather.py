@@ -139,33 +139,38 @@ def weather_endpoint_1():
     """
     raw_cities = request.args.get('route')
     raw_date = request.args.get('date')
+    cities = get_cities(raw_cities)
 
-    # Check that the route has at least a city
-    if not len(raw_cities) > 0:
+    # Checking that the route has at most 24 cities
+    if not len(cities) > 12:
+        result={}
+        result['cod'] = "404"
+        result['message'] = 'The route must have at most twenty four cities'
+        return jsonify(result), 404    
+
+    # Checking that the route has at least a city
+    if not len(cities) > 0:
         result={}
         result['cod'] = "404"
         result['message'] = 'The route must have at least one city'
         return jsonify(result), 404
 
-    # Check the date format
+    # Checking the date format
     if not check_date_format(raw_date):
         result={}
         result['cod'] = "404"
         result['message'] = 'Invalid date format'
         return jsonify(result), 404
 
-
-    # Check the if the date is in the next 5 days
+    # Checking the if the date is in the next 5 days
     if not check_date(raw_date):
         result={}
         result['cod'] = "404"
         result['message'] = 'Date is out of boundaries'
         return jsonify(result), 404
 
-
     trip_cities = ""
-    ## Query the weathermapapi for each city
-    cities = get_cities(raw_cities)
+    # Querying the weather map api for each city
     result = OrderedDict()
     for city in cities:
         weather = get_city_weather(city, raw_date)
@@ -173,15 +178,13 @@ def weather_endpoint_1():
         trip_cities = trip_cities + city + "-"
 
     trip_cities = trip_cities[:-1]
-    # Save in the database the trips
+    # Saving the trips in the database 
     registered_on = datetime.datetime.utcnow()
     reg = TripsTable(trip_cities, registered_on)
     db.session.add(reg)
     db.session.commit()
 
-
     return jsonify(result)
-
 
 
 
@@ -206,9 +209,8 @@ def get_city_weather_bonus(city_name, raw_date, city_ind):
         day, month, year = ('0'+ parsed_date[0]), (parsed_date[1]), (parsed_date[2])
     actual_date = year+"-"+month+"-"+day
 
-
     response = requests.get(url)
-    # Check if the city was not found
+    # Checking if the city was not found
     if response.status_code > 400 and response.status_code < 500:
         return "City not found"
 
@@ -252,7 +254,7 @@ def get_city_weather_bonus(city_name, raw_date, city_ind):
         }
         time_arrival = switcher.get(city_ind, "nothing")              
 
-    # Build the response with weather data
+    # Building the response with weather data
     result_city = {}
     for x in y['list']:
         if actual_date in x['dt_txt'] and time_arrival_interval in x['dt_txt']:
@@ -278,22 +280,23 @@ def weather_endpoint_bonus_1():
     """
     raw_cities = request.args.get('route')
     raw_date = request.args.get('date')
+    cities = get_cities(raw_cities)
 
-    # Check that the route has at least a city
-    if not len(raw_cities) > 0:
+    # Checking that the route has at least a city
+    if not len(cities) > 0:
         result={}
         result['cod'] = "404"
         result['message'] = 'The route must have at least one city'
         return jsonify(result), 404
 
-    # Check that the route has at least a city
-    if not len(raw_cities) > 12:
+    # Checking that the route has at most 12 cities
+    if not len(cities) > 12:
         result={}
         result['cod'] = "404"
         result['message'] = 'The route must have at most twelve cities'
         return jsonify(result), 404        
 
-    # Check the date format
+    # Checking the date format
     if not check_date_format(raw_date):
         result={}
         result['cod'] = "404"
@@ -301,7 +304,7 @@ def weather_endpoint_bonus_1():
         return jsonify(result), 404
 
 
-    # Check the if the date is in the next 5 days
+    # Checking the if the date is in the next 5 days
     if not check_date(raw_date):
         result={}
         result['cod'] = "404"
@@ -310,9 +313,8 @@ def weather_endpoint_bonus_1():
 
 
     trip_cities = ""
-    # Query the openweathermap API for each city
+    # Querying the weather map api for each city
     # taking into account time passes while travelling between cities
-    cities = get_cities(raw_cities)
     result = OrderedDict()
     city_index = 0
     for city in cities:
@@ -322,15 +324,13 @@ def weather_endpoint_bonus_1():
         trip_cities = trip_cities + city + "-"
 
     trip_cities = trip_cities[:-1] 
-    # Save in the database the trips
+    # Saving the trips in the database
     registered_on = datetime.datetime.utcnow()
     reg = TripsTable(trip_cities, registered_on)
     db.session.add(reg)
     db.session.commit()
 
     return jsonify(result)
-
-
 
 
 
@@ -357,6 +357,5 @@ def weather_endpoint_bonus_2():
 
 
 
-  
 if __name__ == '__main__':
     app.run(debug = True)

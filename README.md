@@ -51,7 +51,7 @@ When the API is up and running we can test the endpoints with Postman.
 
 ## Example endpoint 1
 This endpoint accepts only dates in the format 'dd.mm.yyyy.' and the date must be in the interval of the next 5 days, otherwise the API will return an error message.
-The route can have a variate number of cities, and it doesnt have an upper bound. At least one city is needed. 
+The route can have a variate number of cities  and the upperbound limit is 24. At least one city is needed. 
 This endpoint sends back a JSON where we can see the weather  (general weather, celsius degrees and wind speed) every three hours in the specified date, for every city from the route. 
 If a City was not written correctly, an error message will be send instead of weather data. 
 
