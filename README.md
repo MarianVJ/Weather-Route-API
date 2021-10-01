@@ -9,6 +9,11 @@ This project is made for anyone who is looking for an example of how to create a
 The project uses the  weather API https://openweathermap.org/ to request weather data for different cities and dates.
 This project was written using Sublime Text Editor.
 
+The API is also deployed on heroku at https://technical-app-heroku.herokuapp.com/. 
+Some example queries for deployed heroku API :
+* https://technical-app-heroku.herokuapp.com/weather_route/?route=Lucerne,Interlaken&date=2.10.2021
+* https://technical-app-heroku.herokuapp.com/weather_route_bonus/?route=Bucharest,Lucerne,Interlaken&date=2.10.2021
+* https://technical-app-heroku.herokuapp.com/past_trips/
 
 ## Installation
 
