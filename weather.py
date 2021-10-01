@@ -142,7 +142,7 @@ def weather_endpoint_1():
     cities = get_cities(raw_cities)
 
     # Checking that the route has at most 24 cities
-    if not len(cities) > 12:
+    if len(cities) > 24:
         result={}
         result['cod'] = "404"
         result['message'] = 'The route must have at most twenty four cities'
@@ -290,7 +290,7 @@ def weather_endpoint_bonus_1():
         return jsonify(result), 404
 
     # Checking that the route has at most 12 cities
-    if not len(cities) > 12:
+    if len(cities) > 12:
         result={}
         result['cod'] = "404"
         result['message'] = 'The route must have at most twelve cities'
