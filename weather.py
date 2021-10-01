@@ -13,6 +13,8 @@ from sqlalchemy import text
 from models.tables import TripsTable
 from models.tables import db
 
+import sys
+
   
 app = Flask(__name__)
 
@@ -29,10 +31,7 @@ bcrypt = Bcrypt(app)
 with app.app_context():
     db.create_all()
 
-"""
-:param request: 
-:returns 
-"""
+
 
 
 def get_cities(raw_cities):
@@ -41,7 +40,7 @@ def get_cities(raw_cities):
     :param request: the cities names in string format
     :returns a list with all the city names
     """
-    #Delimiter can be  ',' and ' '
+    # Delimiter can be  ',' and ' '
     cities = re.split(',',raw_cities)
     return cities
 
@@ -146,15 +145,14 @@ def weather_endpoint_1():
         result={}
         result['cod'] = "404"
         result['message'] = 'The route must have at least one city'
-        return jsonify(result)
+        return jsonify(result), 404
 
     # Check the date format
     if not check_date_format(raw_date):
         result={}
         result['cod'] = "404"
         result['message'] = 'Invalid date format'
-        #return json.dumps(result)
-        return jsonify(result)
+        return jsonify(result), 404
 
 
     # Check the if the date is in the next 5 days
@@ -162,7 +160,7 @@ def weather_endpoint_1():
         result={}
         result['cod'] = "404"
         result['message'] = 'Date is out of boundaries'
-        return jsonify(result)
+        return jsonify(result), 404
 
 
     trip_cities = ""
@@ -286,22 +284,21 @@ def weather_endpoint_bonus_1():
         result={}
         result['cod'] = "404"
         result['message'] = 'The route must have at least one city'
-        return jsonify(result)
+        return jsonify(result), 404
 
     # Check that the route has at least a city
     if not len(raw_cities) > 12:
         result={}
         result['cod'] = "404"
         result['message'] = 'The route must have at most twelve cities'
-        return jsonify(result)        
+        return jsonify(result), 404        
 
     # Check the date format
     if not check_date_format(raw_date):
         result={}
         result['cod'] = "404"
         result['message'] = 'Invalid date format'
-        #return json.dumps(result)
-        return jsonify(result)
+        return jsonify(result), 404
 
 
     # Check the if the date is in the next 5 days
@@ -309,7 +306,7 @@ def weather_endpoint_bonus_1():
         result={}
         result['cod'] = "404"
         result['message'] = 'Date is out of boundaries'
-        return jsonify(result)
+        return jsonify(result), 404
 
 
     trip_cities = ""
@@ -332,9 +329,6 @@ def weather_endpoint_bonus_1():
     db.session.commit()
 
     return jsonify(result)
-
-
-
 
 
 
